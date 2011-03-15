@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.elmakers.mine.bukkit.borrowed.CreatureType;
+import com.elmakers.mine.bukkit.persistence.Persistence;
 import com.elmakers.mine.bukkit.persistence.dao.Message;
 import com.elmakers.mine.bukkit.persistence.dao.PluginCommand;
 import com.elmakers.mine.bukkit.persistence.dao.WorldData;
@@ -24,7 +26,6 @@ import com.elmakers.mine.bukkit.plugins.crowd.dao.ControlRule;
 import com.elmakers.mine.bukkit.plugins.crowd.dao.ControlledWorld;
 import com.elmakers.mine.bukkit.plugins.persistence.PersistencePlugin;
 import com.elmakers.mine.bukkit.utilities.PluginUtilities;
-import com.elmakers.mine.craftbukkit.persistence.Persistence;
 
 public class CrowdControlPlugin extends JavaPlugin
 {
@@ -62,23 +63,32 @@ public class CrowdControlPlugin extends JavaPlugin
 	
 	public void initialize()
 	{
-		Plugin checkForPersistence = this.getServer().getPluginManager().getPlugin("Persistence");
+		Server server = getServer();
+		Plugin checkForPersistence = server.getPluginManager().getPlugin("Persistence");
 	    if(checkForPersistence != null) 
 	    {
 	    	PersistencePlugin plugin = (PersistencePlugin)checkForPersistence;
 	    	persistence = plugin.getPersistence();
+		    utilities = plugin.createUtilities(this);
 	    } 
 	    else 
 	    {
 	    	log.warning("The NetherGate plugin depends on Persistence");
-	    	this.getServer().getPluginManager().disablePlugin(this);
+	    	server.getPluginManager().disablePlugin(this);
 	    	return;
 	    }
 	    
 	    CrowdControlDefaults d = new CrowdControlDefaults();
-	    utilities = persistence.getUtilities(this);
 	    listener.initialize(persistence, controller);
 	    controller.initialize();
+	    
+	    // Initialize default world!
+	    List<World> allWorlds = server.getWorlds();
+	    if (allWorlds.size() > 0)
+	    {
+	    	String defaultWorldName = allWorlds.get(0).getName();
+	    	utilities.getWorld(this.getServer(), defaultWorldName);
+	    }
 	    
 	    crowdCommand = utilities.getGeneralCommand(d.crowdCommand[0], d.crowdCommand[1], d.crowdCommand[2]);
 	    crowdControlCommand = crowdCommand.getSubCommand(d.crowdControlCommand[0], d.crowdControlCommand[1], d.crowdControlCommand[2]);
@@ -102,7 +112,7 @@ public class CrowdControlPlugin extends JavaPlugin
 		crowdChanceReplaceMessage = utilities.getMessage("crowdChanceReplace", d.crowdChanceReplaceMessage);
 		crowdDisableMessage = utilities.getMessage("crowdDisable", d.crowdDisableMessage);
 		crowdReplaceMessage = utilities.getMessage("crowdReplace", d.crowdReplaceMessage);
-		crowdReleasedMessage = utilities.getMessage("crowdDisable", d.crowdReleasedMessage);
+		crowdReleasedMessage = utilities.getMessage("crowdRelease", d.crowdReleasedMessage);
 		noWorldMessage = utilities.getMessage("noWorld", d.noWorldMessage);
 		killedEntitiesMessage = utilities.getMessage("killedEntities", d.killedEntitiesMessage);
 		noEntityMessage = utilities.getMessage("noEntities", d.noEntityMessage);

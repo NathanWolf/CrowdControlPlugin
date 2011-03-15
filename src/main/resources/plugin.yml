@@ -1,6 +1,6 @@
 name: CrowdControl
 main: com.elmakers.mine.bukkit.plugins.crowd.CrowdControlPlugin
-version: 0.20
+version: 0.21
 website: http://mine.elmakers.com
 author: NathanWolf
 description : Simple console-based creature control

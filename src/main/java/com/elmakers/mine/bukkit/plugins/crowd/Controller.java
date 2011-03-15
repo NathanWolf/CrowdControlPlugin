@@ -41,9 +41,9 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import com.elmakers.mine.bukkit.borrowed.CreatureType;
+import com.elmakers.mine.bukkit.persistence.Persistence;
 import com.elmakers.mine.bukkit.plugins.crowd.dao.ControlRule;
 import com.elmakers.mine.bukkit.plugins.crowd.dao.ControlledWorld;
-import com.elmakers.mine.craftbukkit.persistence.Persistence;
 
 public class Controller
 {

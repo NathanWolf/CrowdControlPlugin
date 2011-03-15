@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.21
+
+ - Auto-create world data, for use without NetherGate
+
 # 0.20
 
  - Fix some broken console command parameters

@@ -2,8 +2,8 @@ package com.elmakers.mine.bukkit.plugins.crowd.dao;
 
 import java.util.List;
 
-import com.elmakers.mine.bukkit.persistence.annotation.PersistClass;
-import com.elmakers.mine.bukkit.persistence.annotation.PersistField;
+import com.elmakers.mine.bukkit.persisted.PersistClass;
+import com.elmakers.mine.bukkit.persisted.PersistField;
 import com.elmakers.mine.bukkit.persistence.dao.WorldData;
 
 @PersistClass(schema="crowd", name="world")
