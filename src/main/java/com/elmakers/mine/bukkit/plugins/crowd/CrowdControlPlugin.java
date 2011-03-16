@@ -73,7 +73,7 @@ public class CrowdControlPlugin extends JavaPlugin
 	    } 
 	    else 
 	    {
-	    	log.warning("The NetherGate plugin depends on Persistence");
+	    	log.warning("The CrowdControl plugin depends on Persistence");
 	    	server.getPluginManager().disablePlugin(this);
 	    	return;
 	    }
