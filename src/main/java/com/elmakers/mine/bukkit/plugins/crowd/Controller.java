@@ -47,122 +47,171 @@ import com.elmakers.mine.bukkit.plugins.crowd.dao.ControlledWorld;
 
 public class Controller
 {
-	public void initialize()
-	{
-	}
-	
-	public static boolean isEntityType(CreatureType type, LivingEntity entity)
-	{
-		if (entity instanceof Player) return false;
+    private static boolean      debugLog = false;
 
-		switch(type)
-		{
-			case SHEEP: return (entity instanceof Sheep);
-			case COW: return (entity instanceof Cow);
-			case PIG: return (entity instanceof Pig);
-			case CREEPER: return (entity instanceof Creeper);
-			case PIG_ZOMBIE: return (entity instanceof PigZombie);
-			case SKELETON: return (entity instanceof Skeleton);
-			case SPIDER: return (entity instanceof Spider);
-			case SQUID: return (entity instanceof Squid);
-			case ZOMBIE: return (entity instanceof Zombie);
-			case GHAST: return (entity instanceof Ghast);
-			case SLIME: return (entity instanceof Slime);
-			case GIANT: return (entity instanceof Giant);
-		}
+    private static final Logger log      = Persistence.getLogger();
 
-		return false;
-	}
-	
-	protected EntityLiving spawn(Location location, CreatureType type)
-	{
-		EntityLiving e = null;
-		CraftWorld craftWorld = (CraftWorld)location.getWorld();
-		WorldServer world = craftWorld.getHandle();
+    public static boolean isEntityType(CreatureType type, LivingEntity entity)
+    {
+        if (entity instanceof Player)
+        {
+            return false;
+        }
 
-		switch (type)
-		{
-			case SHEEP: e = new EntitySheep(world); break;
-			case PIG: e = new EntityPig(world); break;
-			case CHICKEN: e = new EntityChicken(world); break;
-			case COW: e = new EntityCow(world); break;
-			case CREEPER: e = new EntityCreeper(world); break;
-			case PIG_ZOMBIE: e = new EntityPigZombie(world); break;
-			case SKELETON: e = new EntitySkeleton(world); break;
-			case SPIDER: e = new EntitySpider(world); break;
-			case SQUID: e = new EntitySquid(world); break;
-			case GHAST: e = new EntityGhast(world); break;
-			case ZOMBIE: e = new EntityZombie(world); break;
-			case GIANT: e = new EntityGiantZombie(world); break;
-			case SLIME: e = new EntitySlime(world); break;
-			//case FISH: e = new EntityFish(world); break;
-		}
+        switch (type)
+        {
+            case SHEEP:
+                return entity instanceof Sheep;
+            case COW:
+                return entity instanceof Cow;
+            case PIG:
+                return entity instanceof Pig;
+            case CREEPER:
+                return entity instanceof Creeper;
+            case PIG_ZOMBIE:
+                return entity instanceof PigZombie;
+            case SKELETON:
+                return entity instanceof Skeleton;
+            case SPIDER:
+                return entity instanceof Spider;
+            case SQUID:
+                return entity instanceof Squid;
+            case ZOMBIE:
+                return entity instanceof Zombie;
+            case GHAST:
+                return entity instanceof Ghast;
+            case SLIME:
+                return entity instanceof Slime;
+            case GIANT:
+                return entity instanceof Giant;
+        }
 
-		if (e != null)
-		{
-			e.c(location.getX(), location.getY(), location.getZ(), location.getYaw(), 0.0F);
-	        world.a(e);
-		}
-		return e;
-	}
+        return false;
+    }
 
-	public void controlSpawnEvent(ControlledWorld world, CreatureSpawnEvent event)
-	{
-		List<ControlRule> rules = world.getRules();
-		if (rules == null) return;
-		
-		Entity baseEntity = event.getEntity();
-		if (!(baseEntity instanceof LivingEntity)) return;
-		
-		LivingEntity entity = (LivingEntity)baseEntity;
-		
-		for (ControlRule rule : rules)
-		{
-			if (isEntityType(rule.getCreatureType(), entity))
-			{
-				float percent = rule.getPercentChance();
-				if (percent >= rand.nextFloat())
-				{
-					if (debugLog)
-					{
-						log.info("CrowdControl: controlling a " + rule.getCreatureType().getName());
-					}
-					
-					CreatureType replaceWith = rule.getReplaceWith();
-					if (replaceWith != null)
-					{
-						spawn(entity.getLocation(), replaceWith);
-						if (debugLog)
-						{
-							log.info("CrowdControl: spawned a " + replaceWith.getName());
-						}
-					}
-					
-					entity.setHealth(0);
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
-	
-	public int nuke(ControlledWorld targetWorld, CreatureType entityType, boolean nukeAll)
-	{
-		int killCount = 0;
-		World world = targetWorld.getId().getWorld();
-		List<LivingEntity> entities = world.getLivingEntities();
-		for (LivingEntity entity : entities)
-		{
-			if (nukeAll || isEntityType(entityType, entity))
-			{
-				entity.setHealth(0);
-				killCount++;
-			}
-		}
-		
-		return killCount;
-	}
-	
-	private final Random rand = new Random();
-	private static boolean debugLog = false;
-	private static final Logger log = Persistence.getLogger();
+    private final Random rand = new Random();
+
+    public void controlSpawnEvent(ControlledWorld world, CreatureSpawnEvent event)
+    {
+        List<ControlRule> rules = world.getRules();
+        if (rules == null)
+        {
+            return;
+        }
+
+        Entity baseEntity = event.getEntity();
+        if (!(baseEntity instanceof LivingEntity))
+        {
+            return;
+        }
+
+        LivingEntity entity = (LivingEntity) baseEntity;
+
+        for (ControlRule rule : rules)
+        {
+            if (isEntityType(rule.getCreatureType(), entity))
+            {
+                float percent = rule.getPercentChance();
+                if (percent >= rand.nextFloat())
+                {
+                    if (debugLog)
+                    {
+                        log.info("CrowdControl: controlling a " + rule.getCreatureType().getName());
+                    }
+
+                    CreatureType replaceWith = rule.getReplaceWith();
+                    if (replaceWith != null)
+                    {
+                        spawn(entity.getLocation(), replaceWith);
+                        if (debugLog)
+                        {
+                            log.info("CrowdControl: spawned a " + replaceWith.getName());
+                        }
+                    }
+
+                    entity.setHealth(0);
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    public void initialize()
+    {
+    }
+
+    public int nuke(ControlledWorld targetWorld, CreatureType entityType, boolean nukeAll)
+    {
+        int killCount = 0;
+        World world = targetWorld.getId().getWorld();
+        List<LivingEntity> entities = world.getLivingEntities();
+        for (LivingEntity entity : entities)
+        {
+            if (nukeAll || isEntityType(entityType, entity))
+            {
+                entity.setHealth(0);
+                killCount++;
+            }
+        }
+
+        return killCount;
+    }
+
+    protected EntityLiving spawn(Location location, CreatureType type)
+    {
+        EntityLiving e = null;
+        CraftWorld craftWorld = (CraftWorld) location.getWorld();
+        WorldServer world = craftWorld.getHandle();
+
+        switch (type)
+        {
+            case SHEEP:
+                e = new EntitySheep(world);
+                break;
+            case PIG:
+                e = new EntityPig(world);
+                break;
+            case CHICKEN:
+                e = new EntityChicken(world);
+                break;
+            case COW:
+                e = new EntityCow(world);
+                break;
+            case CREEPER:
+                e = new EntityCreeper(world);
+                break;
+            case PIG_ZOMBIE:
+                e = new EntityPigZombie(world);
+                break;
+            case SKELETON:
+                e = new EntitySkeleton(world);
+                break;
+            case SPIDER:
+                e = new EntitySpider(world);
+                break;
+            case SQUID:
+                e = new EntitySquid(world);
+                break;
+            case GHAST:
+                e = new EntityGhast(world);
+                break;
+            case ZOMBIE:
+                e = new EntityZombie(world);
+                break;
+            case GIANT:
+                e = new EntityGiantZombie(world);
+                break;
+            case SLIME:
+                e = new EntitySlime(world);
+                break;
+            // case FISH: e = new EntityFish(world); break;
+        }
+
+        if (e != null)
+        {
+            e.c(location.getX(), location.getY(), location.getZ(), location.getYaw(), 0.0F);
+            world.a(e);
+        }
+        return e;
+    }
 }

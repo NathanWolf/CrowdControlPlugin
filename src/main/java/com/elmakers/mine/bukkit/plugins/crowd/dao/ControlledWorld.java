@@ -6,42 +6,42 @@ import com.elmakers.mine.bukkit.persisted.PersistClass;
 import com.elmakers.mine.bukkit.persisted.PersistField;
 import com.elmakers.mine.bukkit.persistence.dao.WorldData;
 
-@PersistClass(schema="crowd", name="world")
+@PersistClass(schema = "crowd", name = "world")
 public class ControlledWorld
 {
-	public ControlledWorld()
-	{
-		
-	}
-	
-	public ControlledWorld(WorldData world)
-	{
-		this.id = world;
-	}
-	
-	@PersistField(id=true)
-	public WorldData getId()
-	{
-		return id;
-	}
+    protected WorldData         id;
 
-	public void setId(WorldData id)
-	{
-		this.id = id;
-	}
+    protected List<ControlRule> rules;
 
-	@PersistField(contained=true)
-	public List<ControlRule> getRules()
-	{
-		return rules;
-	}
+    public ControlledWorld()
+    {
 
-	public void setRules(List<ControlRule> rules)
-	{
-		this.rules = rules;
-	}
-	
-	protected WorldData			id;
-	protected List<ControlRule>	rules;
+    }
+
+    public ControlledWorld(WorldData world)
+    {
+        this.id = world;
+    }
+
+    @PersistField(id = true)
+    public WorldData getId()
+    {
+        return id;
+    }
+
+    @PersistField(contained = true)
+    public List<ControlRule> getRules()
+    {
+        return rules;
+    }
+
+    public void setId(WorldData id)
+    {
+        this.id = id;
+    }
+
+    public void setRules(List<ControlRule> rules)
+    {
+        this.rules = rules;
+    }
 }
-	
