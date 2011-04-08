@@ -4,6 +4,8 @@ version: 0.21
 website: http://mine.elmakers.com
 author: NathanWolf
 description : Simple console-based creature control
+depend:
+ - Persistence
 commands:
   crowd:
     description: Control mob spawning
